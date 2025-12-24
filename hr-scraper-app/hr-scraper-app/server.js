@@ -117,9 +117,6 @@ app.post('/upload', upload.single('csvfile'), (req, res) => {
             if(name) companies.push(name); 
         })
         .on('end', async () => {
-            if (companies.length > 300) {
-                return res.status(400).json({ success: false, message: "Limit exceeded: Max 300 companies allowed." });
-            }
             const results = await runScraper(companies);
             const fileName = `results_${Date.now()}.csv`;
             const filePath = path.join(__dirname, 'results', fileName);

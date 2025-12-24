@@ -27,7 +27,7 @@
             </div>
             <div class="flex items-center gap-3">
                 <div class="bg-white border border-slate-200 px-4 py-2 rounded-2xl shadow-sm text-sm font-semibold text-slate-600">
-                    Limit: <span class="text-indigo-600">300 Companies</span>
+                    No Limit
                 </div>
             </div>
         </header>
@@ -55,7 +55,8 @@
                         <div class="bg-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-110 transition-transform">
                             <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-400"></i>
                         </div>
-                        <p id="fileNameDisplay" class="text-sm text-slate-500 mb-4">Click to upload CSV</p>
+                        <p id="fileNameDisplay" class="text-sm text-slate-500 mb-2">Click to upload CSV</p>
+                        <p id="companyCount" class="text-xs text-slate-400 mb-4"></p>
                         <button onclick="document.getElementById('csvFile').click()" class="bg-white border border-slate-200 px-4 py-2 rounded-xl text-xs font-bold text-slate-700 hover:shadow-md transition-all">Choose File</button>
                     </div>
                     <button id="runBtn" onclick="startProcess()" class="w-full mt-4 bg-slate-900 text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-slate-200 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
@@ -165,9 +166,21 @@
 
         csvInput.addEventListener('change', () => {
             if (csvInput.files.length > 0) {
-                fileNameDisplay.innerText = csvInput.files[0].name;
+                const file = csvInput.files[0];
+                fileNameDisplay.innerText = file.name;
                 fileNameDisplay.classList.add('text-indigo-600', 'font-bold');
-                addLog(`File attached: ${csvInput.files[0].name}`);
+                addLog(`File attached: ${file.name}`);
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    const lines = text.split('\n').filter(line => line.trim().length > 0);
+                    const count = lines.length - 1; // assuming first line is header
+                    document.getElementById('companyCount').innerText = `${count} companies detected`;
+                };
+                reader.readAsText(file);
+            } else {
+                document.getElementById('companyCount').innerText = '';
             }
         });
 
